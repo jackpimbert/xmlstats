@@ -29,22 +29,14 @@ def get_data(url):
     return json.loads(data_json)
 
 
-def save_data(data, filename):
+def save_data(data, file_dir):
     """Save python data as JSON file"""
-    file_dir = '{base}{filename}.json'.format(
-        base=BASE_DIR,
-        filename=filename,
-    )
     with open(file_dir, 'w') as f:
         json.dump(data, f)
 
 
-def load_data(filename):
+def load_data(file_dir):
     """Load JSON data into python"""
-    file_dir = '{base}{filename}.json'.format(
-        base=BASE_DIR,
-        filename=filename,
-    )
     with open(file_dir, 'r') as f:
         return json.load(f)
 
@@ -112,23 +104,26 @@ def get_box_score(sport, event_id):
 
 def get_all_box_scores(sport):
     teams = get_teams(sport)
+    print 'teams fetched'
     sleep(10)
 
     box_scores = []
     for team in teams:
         team_id = team['team_id']
         schedule = get_team_schedule(sport, team_id)
+        print '{} schedule fetched'.format(team_id)
         sleep(10)
 
         for event in schedule:
             event_id = event['event_id']
-            event_status = event['status']
-            season_type = event['season_type']
+            event_status = event['event_status']
+            season_type = event['event_season_type']
 
             if (event_status == 'completed' and
                     season_type == 'regular' or
                     season_type == 'post'):
                 box_score = get_box_score(sport, event_id)
+                print '{} box score fetched'.format(event_id)
                 sleep(10)
 
                 box_scores.append(box_score)
@@ -138,4 +133,5 @@ def get_all_box_scores(sport):
         sport=sport,
     )
     save_data(box_scores, file_dir)
+    print 'completed'
     return box_scores
