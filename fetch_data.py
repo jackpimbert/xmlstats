@@ -19,6 +19,7 @@ def get_data(url):
 
     data = None
     response = urllib2.urlopen(req)
+    sleep(10)
     if "gzip" == response.info().get("Content-encoding"):
         buf = StringIO(response.read())
         f = gzip.GzipFile(fileobj=buf)
@@ -105,14 +106,12 @@ def get_box_score(sport, event_id):
 def get_all_box_scores(sport):
     teams = get_teams(sport)
     print 'teams fetched'
-    sleep(10)
 
     box_scores = []
     for team in teams:
         team_id = team['team_id']
         schedule = get_team_schedule(sport, team_id)
         print '{} schedule fetched'.format(team_id)
-        sleep(10)
 
         for event in schedule:
             event_id = event['event_id']
@@ -124,7 +123,6 @@ def get_all_box_scores(sport):
                     season_type == 'post'):
                 box_score = get_box_score(sport, event_id)
                 print '{} box score fetched'.format(event_id)
-                sleep(10)
 
                 box_scores.append(box_score)
 
@@ -135,3 +133,5 @@ def get_all_box_scores(sport):
     save_data(box_scores, file_dir)
     print 'completed'
     return box_scores
+
+""" Next compile information on all players """
