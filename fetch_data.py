@@ -31,14 +31,20 @@ def get_data(url):
 
 def save_data(data, filename):
     """Save python data as JSON file"""
-    file_dir = BASE_DIR + filename + '.json'
+    file_dir = '{base}{filename}.json'.format(
+        base=BASE_DIR,
+        filename=filename,
+    )
     with open(file_dir, 'w') as f:
         json.dump(data, f)
 
 
 def load_data(filename):
     """Load JSON data into python"""
-    file_dir = BASE_DIR + filename + '.json'
+    file_dir = '{base}{filename}.json'.format(
+        base=BASE_DIR,
+        filename=filename,
+    )
     with open(file_dir, 'r') as f:
         return json.load(f)
 
@@ -123,6 +129,8 @@ def get_all_box_scores(sport):
                     season_type == 'regular' or
                     season_type == 'post'):
                 box_score = get_box_score(sport, event_id)
+                sleep(10)
+
                 box_scores.append(box_score)
 
     file_dir = '{base}{sport}/boxscores.json'.format(
