@@ -134,4 +134,45 @@ def get_all_box_scores(sport):
     print 'completed'
     return box_scores
 
-""" Next compile information on all players """
+
+def get_team_roster(sport, team_id):
+    file_dir = '{base}{sport}/roster/{team_id}.json'.format(
+        base=BASE_DIR,
+        sport=sport,
+        team_id=team_id,
+    )
+
+    if os.path.isfile(file_dir):
+        return load_data(file_dir)
+    else:
+        if sport == 'mlb':
+            url = '{base}{sport}/roster/{team_id}.json?status=expanded'.format(
+                base=BASE_URL,
+                sport=sport,
+                team_id=team_id,
+                )
+        else:
+            url = '{base}{sport}/roster/{team_id}.json'.format(
+                base=BASE_URL,
+                sport=sport,
+                team_id=team_id,
+                )
+        data = get_data(url)
+        save_data(data, file_dir)
+        return data
+
+
+def get_team_rosters(sport):
+    teams = get_teams(sport)
+
+    for team in teams:
+        team_id = team['team_id']
+        roster = get_team_roster(sport, team_id)
+
+        team_key = team_id.replace('-', '_')
+        for player in roster['players']:
+            name = player['display_name']
+            birthday = player['birthdate'].replace('-', '')
+
+            key = name.lower().replace(' ', '_').encode('utf-8')
+            ukey = '{}_{}'.format(key, birthday, team_key)
