@@ -2,6 +2,7 @@ import gzip
 import json
 import os.path
 import urllib2
+from collections import defaultdict
 from StringIO import StringIO
 from time import sleep
 
@@ -162,8 +163,9 @@ def get_team_roster(sport, team_id):
         return data
 
 
-def get_team_rosters(sport):
+def get_players(sport):
     teams = get_teams(sport)
+    players = defaultdict(list)
 
     for team in teams:
         team_id = team['team_id']
@@ -175,4 +177,12 @@ def get_team_rosters(sport):
             birthday = player['birthdate'].replace('-', '')
 
             key = name.lower().replace(' ', '_').encode('utf-8')
-            ukey = '{}_{}'.format(key, birthday, team_key)
+            ukey = '{}_{}_{}'.format(key, birthday, team_key)
+
+            players[name.encode('utf-8')].append(ukey)
+
+    file_dir = '{base}{sport}/players.json'.format(
+        base=BASE_DIR,
+        sport=sport,
+        )
+    save_data(players, file_dir)

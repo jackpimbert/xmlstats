@@ -2,20 +2,34 @@ import json
 from collections import defaultdict
 from uuid import uuid4
 
-with open('data/mlb/boxscores.json', 'r') as f:
-    box_scores = json.load(f)
 
-player_stats = defaultdict(list)
-player_keys = defaultdict(list)
+def all_mlb_player_stats():
+    with open('data/mlb/boxscores.json', 'r') as f:
+        box_scores = json.load(f)
 
-for box_score in box_scores:
-    home_batters = box_score['home_batters']
-    for batter in home_batters:
-        name = batter['display_name']
+    all_player_stats = defaultdict(list)
 
-        uuid = uuid4()
-        key = name.lower().replace(' ', '_')
-        u_key = '{}-{}'.format(key.encode('utf-8'), uuid)
+    for box_score in box_scores:
+        home_abbr = box_score['home_team']['abbreviation']
+        home_batters = box_score['home_batters']
+        for player in home_batters:
+            name = player['display_name'].replace(' ', '_').encode('utf-8')
+            key = '{}_{}'.format(name, home_abbr).lower()
 
-        player_stats[u_key].append(batter)
-        player_keys[name].append(u_key)
+            all_player_stats[key].append(player)
+
+        away_abbr = box_score['away_team']['abbreviation']
+        away_batters = box_score['away_batters']
+        for player in away_batters:
+            name = player['display_name'].replace(' ', '_').encode('utf-8')
+            key = '{}_{}'.format(name, away_abbr).lower()
+
+            all_player_stats[key].append(player)
+
+    return all_player_stats
+
+
+def get_player_stats(player_stats):
+    for game in player_stats:
+        
+    
